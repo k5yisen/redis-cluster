@@ -1,0 +1,128 @@
+version: "3.9"
+
+services:
+  redis-7001:
+    image: redis:7.2
+    container_name: redis-7001
+    command: ["redis-server", "/data/redis.conf"]
+    ports: ["7001:7001", "17001:17001"]
+    volumes: ["./data/7001:/data"]
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.11
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7001", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis-7002:
+    image: redis:7.2
+    container_name: redis-7002
+    command: ["redis-server", "/data/redis.conf"]
+    ports: ["7002:7002", "17002:17002"]
+    volumes: ["./data/7002:/data"]
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.12
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7002", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis-7003:
+    image: redis:7.2
+    container_name: redis-7003
+    command: ["redis-server", "/data/redis.conf"]
+    ports: ["7003:7003", "17003:17003"]
+    volumes: ["./data/7003:/data"]
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.13
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7003", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis-7004:
+    image: redis:7.2
+    container_name: redis-7004
+    command: ["redis-server", "/data/redis.conf"]
+    ports: ["7004:7004", "17004:17004"]
+    volumes: ["./data/7004:/data"]
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.14
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7004", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis-7005:
+    image: redis:7.2
+    container_name: redis-7005
+    command: ["redis-server", "/data/redis.conf"]
+    ports: ["7005:7005", "17005:17005"]
+    volumes: ["./data/7005:/data"]
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.15
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7005", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis-7006:
+    image: redis:7.2
+    container_name: redis-7006
+    command: ["redis-server", "/data/redis.conf"]
+    ports: ["7006:7006", "17006:17006"]
+    volumes: ["./data/7006:/data"]
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.16
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "7006", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  init-cluster:
+    image: redis:7.2
+    container_name: redis-init-cluster
+    depends_on:
+      redis-7001: { condition: service_healthy }
+      redis-7002: { condition: service_healthy }
+      redis-7003: { condition: service_healthy }
+      redis-7004: { condition: service_healthy }
+      redis-7005: { condition: service_healthy }
+      redis-7006: { condition: service_healthy }
+    networks:
+      rcnet:
+        ipv4_address: 172.20.0.10
+    restart: "no"
+    command: 
+      - sh
+      - -c
+      - |
+        echo "Checking if cluster already formed..."
+        if redis-cli -h redis-7001 -p 7001 cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
+          echo "Cluster already OK. Skipping creation."
+          exit 0
+        fi
+        echo "Creating Redis Cluster (3 masters + 3 replicas)..."
+        redis-cli --cluster create redis-7001:7001 redis-7002:7002 redis-7003:7003 redis-7004:7004 redis-7005:7005 redis-7006:7006 --cluster-replicas 1 --cluster-yes
+        echo "Cluster created successfully!"
+        redis-cli -h redis-7001 -p 7001 cluster info | grep cluster_state
+
+networks:
+  rcnet:
+    name: rcnet
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24

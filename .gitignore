@@ -1,0 +1,13 @@
+# Redis generated files
+data/*/appendonlydir/
+data/*/appendonly.aof
+data/*/dump.rdb
+data/*/nodes.conf
+
+# Redis logs
+data/*/*.log
+*.log
+
+# Temporary files
+*.tmp
+*.temp
