@@ -1,10 +1,10 @@
 # Redis Cluster Sandbox
 
-A production-ready **6-node Redis 7.2 cluster** (3 masters + 3 replicas) built with Docker Compose. This setup is designed for local development and testing, supporting both **macOS** (with port mapping) and **Linux/Ubuntu** (with host networking).
+A production-ready **6-node Redis 8.2.2 cluster** (3 masters + 3 replicas) built with Docker Compose. This setup is designed for local development and testing, supporting both **macOS** (with port mapping) and **Linux/Ubuntu** (with host networking).
 
 ## 🌟 Features
 
-- ✅ **Redis 7.2** cluster with automatic failover
+- ✅ **Redis 8.2.2** cluster with automatic failover
 - ✅ **3 master + 3 replica** architecture for high availability
 - ✅ **Persistent storage** with bind-mounted volumes
 - ✅ **Automatic cluster initialization** on first start
@@ -481,13 +481,13 @@ docker exec redis-7001 redis-cli -p 7001 MEMORY DOCTOR
 │                    Redis Cluster                        │
 ├─────────────────────────────────────────────────────────┤
 │                                                         │
-│  Master 1 (7001)  ←──→  Replica 1 (7004)              │
+│  Master 1 (7001)  ←──→  Replica 1 (7004)                │
 │  Slots: 0-5460                                          │
 │                                                         │
-│  Master 2 (7002)  ←──→  Replica 2 (7005)              │
+│  Master 2 (7002)  ←──→  Replica 2 (7005)                │
 │  Slots: 5461-10922                                      │
 │                                                         │
-│  Master 3 (7003)  ←──→  Replica 3 (7006)              │
+│  Master 3 (7003)  ←──→  Replica 3 (7006)                │
 │  Slots: 10923-16383                                     │
 │                                                         │
 └─────────────────────────────────────────────────────────┘

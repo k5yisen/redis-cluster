@@ -5,7 +5,7 @@ version: "3.9"
 
 services:
   redis-7001:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-7001
     command: ["redis-server", "/data/redis.conf"]
     network_mode: "host"
@@ -17,7 +17,7 @@ services:
       retries: 20
 
   redis-7002:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-7002
     command: ["redis-server", "/data/redis.conf"]
     network_mode: "host"
@@ -29,7 +29,7 @@ services:
       retries: 20
 
   redis-7003:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-7003
     command: ["redis-server", "/data/redis.conf"]
     network_mode: "host"
@@ -41,7 +41,7 @@ services:
       retries: 20
 
   redis-7004:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-7004
     command: ["redis-server", "/data/redis.conf"]
     network_mode: "host"
@@ -53,7 +53,7 @@ services:
       retries: 20
 
   redis-7005:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-7005
     command: ["redis-server", "/data/redis.conf"]
     network_mode: "host"
@@ -65,7 +65,7 @@ services:
       retries: 20
 
   redis-7006:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-7006
     command: ["redis-server", "/data/redis.conf"]
     network_mode: "host"
@@ -77,7 +77,7 @@ services:
       retries: 20
 
   init-cluster:
-    image: redis:7.2
+    image: redis:8.2.2
     container_name: redis-init-cluster
     depends_on:
       redis-7001: { condition: service_healthy }
