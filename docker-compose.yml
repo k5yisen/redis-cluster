@@ -117,6 +117,8 @@ services:
         echo "Creating Redis Cluster (3 masters + 3 replicas)..."
         redis-cli --cluster create redis-7001:7001 redis-7002:7002 redis-7003:7003 redis-7004:7004 redis-7005:7005 redis-7006:7006 --cluster-replicas 1 --cluster-yes
         echo "Cluster created successfully!"
+        echo "Waiting for cluster state to stabilize..."
+        sleep 5
         redis-cli -h redis-7001 -p 7001 cluster info | grep cluster_state
 
 networks:
