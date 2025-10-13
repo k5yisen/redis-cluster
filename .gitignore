@@ -1,13 +1,32 @@
-# Redis generated files
-data/*/appendonlydir/
-data/*/appendonly.aof
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories (optional - only if you vendor)
+vendor/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Redis data (you might want this)
 data/*/dump.rdb
 data/*/nodes.conf
-
-# Redis logs
-data/*/*.log
-*.log
-
-# Temporary files
-*.tmp
-*.temp
+data/*/appendonlydir/
