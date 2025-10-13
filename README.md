@@ -127,3 +127,14 @@ Done
 
 Happy clustering! 🚀
 
+### Run Go Application
+
+```bash
+cd app
+
+go run example-host.go
+
+# or
+
+go run test-connection.go
+```
