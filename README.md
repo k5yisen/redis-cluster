@@ -151,27 +151,23 @@ go run test-connection.go
 Each node reads its configuration from `data/<port>/redis.conf`. Common customizations:
 
 ```conf
-# Security (add authentication)
-requirepass YOUR_PASSWORD
-masterauth YOUR_PASSWORD
+# Redis configuration for cluster node 7001
+# Network
+port 7001
+bind 0.0.0.0
+protected-mode no
 
-# Memory Management
-maxmemory 512mb
-maxmemory-policy volatile-lru
-
-# Persistence Strategy
-appendonly yes
-appendfsync everysec
-
-# RDB Snapshots
-save 900 1     # After 900 sec if at least 1 key changed
-save 300 10    # After 300 sec if at least 10 keys changed
-save 60 10000  # After 60 sec if at least 10000 keys changed
-
-# Logging
-loglevel notice
-logfile ""
+# Cluster
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+cluster-announce-port 7001
+cluster-announce-ip <host-ip>
+cluster-announce-bus-port 17001
 ```
+
+cluster-announce-ip needs to change host-ip
+
 
 **Apply changes:**
 
