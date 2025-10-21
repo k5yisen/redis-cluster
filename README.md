@@ -162,11 +162,11 @@ cluster-enabled yes
 cluster-config-file nodes.conf
 cluster-node-timeout 5000
 cluster-announce-port 7001
-cluster-announce-ip <host-ip>
+cluster-announce-ip <<host-ip>>
 cluster-announce-bus-port 17001
 ```
 
-cluster-announce-ip needs to change <host-ip>
+cluster-announce-ip needs to change <<host-ip>>
 
 
 **Apply changes:**
