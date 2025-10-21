@@ -166,7 +166,7 @@ cluster-announce-ip <host-ip>
 cluster-announce-bus-port 17001
 ```
 
-cluster-announce-ip needs to change host-ip
+cluster-announce-ip needs to change <host-ip>
 
 
 **Apply changes:**
