@@ -48,17 +48,13 @@ redis-cluster/
 
 ## 🚀 Quick Start
 
-### macOS Setup
+### Setup
 
 **Using Docker Compose:**
 
 ```bash
 task setup
 ```
-
-The script will:
-
-
 ---
 
 ## 🔍 Verifying the Cluster
