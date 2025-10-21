@@ -16,6 +16,7 @@ A production-ready **6-node Redis 8.2.2 cluster** (3 masters + 3 replicas) built
 - **Docker Engine** & **Docker Compose** (v2+)
 - 6 free TCP ports: `7001-7006` (Redis ports)
 - 6 free TCP ports: `17001-17006` (cluster bus ports)
+- *Optional* but recommended: [`go-task`](https://taskfile.dev/#/installation) to run the predefined automation in `Taskfile.yml`
 - *Optional*: **Go 1.19+** (for running Go examples)
 
 ## 📁 Project Structure
