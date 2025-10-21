@@ -63,21 +63,7 @@ redis-cluster/
 **Using Docker Compose:**
 
 ```bash
-# Start the cluster
-docker compose -f docker-compose-macos.yml up -d
-
-# Verify cluster status
-docker exec redis-7001 redis-cli -p 7001 cluster info
-
-# Check cluster nodes
-docker exec redis-7001 redis-cli -p 7001 cluster nodes
-
-# Test a simple operation
-docker exec redis-7001 redis-cli -p 7001 SET mykey "Hello Redis"
-docker exec redis-7001 redis-cli -p 7001 GET mykey
-
-# Stop the cluster
-docker compose -f docker-compose-macos.yml down
+task setup-macos
 ```
 
 ### Ubuntu/Linux Setup

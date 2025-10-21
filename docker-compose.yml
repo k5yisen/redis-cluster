@@ -1,14 +1,16 @@
 version: "3.9"
 
-# This docker-compose uses port mapping to expose Redis on macOS
-# macOS Docker Desktop doesn't support host networking like Linux
-# This setup works for connecting from the host using localhost:port
+# This docker-compose uses host network mode
+# This allows Go clients to connect directly without docker exec
 
 services:
   redis-7001:
     image: redis:8.2.2
     container_name: redis-7001
     command: ["redis-server", "/data/redis.conf"]
+    environment:
+      - SKIP_FIX_PERMS=1
+    # network_mode: "host"
     ports: 
       - "7001:7001"
       - "17001:17001"
@@ -23,6 +25,9 @@ services:
     image: redis:8.2.2
     container_name: redis-7002
     command: ["redis-server", "/data/redis.conf"]
+    environment:
+      - SKIP_FIX_PERMS=1
+    # network_mode: "host"
     ports: 
       - "7002:7002"
       - "17002:17002"
@@ -37,6 +42,9 @@ services:
     image: redis:8.2.2
     container_name: redis-7003
     command: ["redis-server", "/data/redis.conf"]
+    environment:
+      - SKIP_FIX_PERMS=1
+    # network_mode: "host"
     ports: 
       - "7003:7003"
       - "17003:17003"
@@ -51,6 +59,9 @@ services:
     image: redis:8.2.2
     container_name: redis-7004
     command: ["redis-server", "/data/redis.conf"]
+    environment:
+      - SKIP_FIX_PERMS=1
+    # network_mode: "host"
     ports: 
       - "7004:7004"
       - "17004:17004"
@@ -65,6 +76,9 @@ services:
     image: redis:8.2.2
     container_name: redis-7005
     command: ["redis-server", "/data/redis.conf"]
+    environment:
+      - SKIP_FIX_PERMS=1
+    # network_mode: "host"
     ports: 
       - "7005:7005"
       - "17005:17005"
@@ -79,6 +93,9 @@ services:
     image: redis:8.2.2
     container_name: redis-7006
     command: ["redis-server", "/data/redis.conf"]
+    environment:
+      - SKIP_FIX_PERMS=1
+    # network_mode: "host"
     ports: 
       - "7006:7006"
       - "17006:17006"
@@ -110,16 +127,33 @@ services:
           exit 0
         fi
         echo "Creating Redis Cluster (3 masters + 3 replicas)..."
-        echo "Using container names for cluster formation..."
-        redis-cli --cluster create \
-          redis-7001:7001 \
-          redis-7002:7002 \
-          redis-7003:7003 \
-          redis-7004:7004 \
-          redis-7005:7005 \
-          redis-7006:7006 \
-          --cluster-replicas 1 --cluster-yes
+        redis-cli --cluster create redis-7001:7001 redis-7002:7002 redis-7003:7003 redis-7004:7004 redis-7005:7005 redis-7006:7006 --cluster-replicas 1 --cluster-yes
         echo "Cluster created successfully!"
         echo "Waiting for cluster state to stabilize..."
         sleep 5
         redis-cli -h redis-7001 -p 7001 cluster info | grep cluster_state
+
+  redis-insight:
+    image: redis/redisinsight:2.70
+    container_name: redis-insight
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis-insight-data:/data
+    environment:
+      - REDISINSIGHT_LOGFILE=/data/redisinsight.log
+    depends_on:
+      - redis-7001
+      - redis-7002
+      - redis-7003
+      - redis-7004
+      - redis-7005
+      - redis-7006
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5540/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis-insight-data:

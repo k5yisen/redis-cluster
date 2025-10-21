@@ -17,9 +17,7 @@ func main() {
 	fmt.Println("=== Connecting to Redis Cluster (from Host using localhost) ===\n")
 
 	// Connect to Redis Cluster using localhost
-	// This works on macOS with docker-compose-macos.yml which uses port mapping
-	// Redis announces host.docker.internal internally, but we connect via localhost
-	rdb := redis.NewClusterClient(&redis.ClusterOptions{
+	opt := &redis.ClusterOptions{
 		Addrs: []string{
 			"localhost:7001",
 			"localhost:7002",
@@ -28,7 +26,9 @@ func main() {
 			"localhost:7005",
 			"localhost:7006",
 		},
-	})
+	}
+
+	rdb := redis.NewClusterClient(opt)
 	defer rdb.Close()
 
 	// Ping to verify connection
