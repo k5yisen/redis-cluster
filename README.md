@@ -1,6 +1,6 @@
 # Redis Cluster Sandbox
 
-A production-ready **6-node Redis 8.2.2 cluster** (3 masters + 3 replicas) built with Docker Compose. This setup is designed for local development and testing, supporting both **macOS** (with port mapping) and **Linux/Ubuntu** (with host networking).
+A production-ready **6-node Redis 8.2.2 cluster** (3 masters + 3 replicas) built with Docker Compose.
 
 ## 🌟 Features
 
@@ -8,7 +8,6 @@ A production-ready **6-node Redis 8.2.2 cluster** (3 masters + 3 replicas) built
 - ✅ **3 master + 3 replica** architecture for high availability
 - ✅ **Persistent storage** with bind-mounted volumes
 - ✅ **Automatic cluster initialization** on first start
-- ✅ **Platform-specific configurations** (macOS and Linux)
 - ✅ **Go client examples** for cluster interaction
 - ✅ **Automated setup script** for Ubuntu/Linux
 
@@ -17,28 +16,19 @@ A production-ready **6-node Redis 8.2.2 cluster** (3 masters + 3 replicas) built
 - **Docker Engine** & **Docker Compose** (v2+)
 - 6 free TCP ports: `7001-7006` (Redis ports)
 - 6 free TCP ports: `17001-17006` (cluster bus ports)
-- **macOS**, **Linux**, or **WSL2**
 - *Optional*: **Go 1.19+** (for running Go examples)
 
 ## 📁 Project Structure
 
 ```
 redis-cluster/
-├── docker-compose-macos.yml      # macOS config (port mapping)
-├── docker-compose-host.yml       # Linux config (host networking)
-├── setup-ubuntu.sh               # Automated Ubuntu setup script
+├── docker-compose.yml            # docker-compose.yml
+├── Taskfile.yml                  # Automated setup script
 ├── README.md                     # This file
 ├── app/                          # Go client examples
-│   ├── example-host.go           # Full cluster example
+│   ├── example.go                # Full cluster example
 │   ├── test-connection.go        # Connection test
 │   └── go.mod                    # Go dependencies
-├── config-ubuntu/                # Ubuntu-specific configs
-│   ├── redis-7001.conf
-│   ├── redis-7002.conf
-│   ├── redis-7003.conf
-│   ├── redis-7004.conf
-│   ├── redis-7005.conf
-│   └── redis-7006.conf
 └── data/                         # Persistent data (bind-mounted)
     ├── 7001/
     │   ├── redis.conf            # Node configuration
@@ -63,47 +53,11 @@ redis-cluster/
 **Using Docker Compose:**
 
 ```bash
-task setup-macos
-```
-
-### Ubuntu/Linux Setup
-
-**Option 1: Automated Script** *(Recommended)*
-
-```bash
-# Make the script executable
-chmod +x setup-ubuntu.sh
-
-# Run the setup script
-./setup-ubuntu.sh
+task setup
 ```
 
 The script will:
-1. ✅ Copy Ubuntu-specific configs to `data/` directories
-2. ✅ Clean old cluster state
-3. ✅ Stop any existing cluster
-4. ✅ Start the cluster with host networking
-5. ✅ Wait for cluster formation
-6. ✅ Display cluster status
 
-**Option 2: Manual Setup**
-
-```bash
-# Copy configs
-for port in 7001 7002 7003 7004 7005 7006; do
-    cp config-ubuntu/redis-$port.conf data/$port/redis.conf
-done
-
-# Clean old cluster state
-rm -f data/*/nodes.conf
-
-# Start the cluster
-docker compose -f docker-compose-host.yml up -d
-
-# Verify cluster status
-docker exec redis-7001 redis-cli -p 7001 cluster info
-docker exec redis-7001 redis-cli -p 7001 cluster nodes
-```
 
 ---
 
@@ -112,7 +66,7 @@ docker exec redis-7001 redis-cli -p 7001 cluster nodes
 ### Check Cluster Status
 
 ```bash
-docker exec redis-7001 redis-cli -p 7001 cluster info
+task info
 ```
 
 Expected output should include:
@@ -125,7 +79,7 @@ cluster_known_nodes:6
 ### View Cluster Topology
 
 ```bash
-docker exec redis-7001 redis-cli -p 7001 cluster nodes
+task nodes
 ```
 
 You should see 3 masters and 3 replicas with slots distributed across masters (0-16383).
@@ -188,8 +142,7 @@ go run test-connection.go
 
 ### Key Points
 
-- **macOS**: Examples use `localhost:7001-7006` (port mapping)
-- **Linux**: Examples use `localhost:7001-7006` (host networking)
+- Examples use `localhost:7001-7006` (port mapping)
 - The Go client automatically handles cluster redirections
 - Uses `github.com/redis/go-redis/v9` cluster client
 
@@ -228,27 +181,8 @@ logfile ""
 
 ```bash
 # Restart a specific node
-docker restart redis-7001
-
-# Or restart all nodes
-docker compose -f docker-compose-macos.yml restart  # macOS
-docker compose -f docker-compose-host.yml restart   # Linux
+task restart
 ```
-
-### Network Configuration Differences
-
-**macOS (`docker-compose-macos.yml`):**
-- Uses **port mapping** (`-p 7001:7001`)
-- Containers communicate via Docker's bridge network
-- Host connects via `localhost:7001-7006`
-- Nodes announce themselves as `host.docker.internal`
-
-**Linux (`docker-compose-host.yml`):**
-- Uses **host networking** (`network_mode: host`)
-- Containers directly use host's network stack
-- More efficient for cluster communication
-- Nodes announce themselves as `127.0.0.1`
-
 ---
 
 ## 🛠️ Maintenance & Operations
@@ -329,17 +263,10 @@ docker compose -f docker-compose-macos.yml up -d
 If you need to completely reset the cluster:
 
 ```bash
-# macOS
-docker compose -f docker-compose-macos.yml down
+docker compose -f docker-compose.yml down
 rm -f data/*/nodes.conf data/*/dump.rdb
 rm -rf data/*/appendonlydir
-docker compose -f docker-compose-macos.yml up -d
-
-# Linux
-docker compose -f docker-compose-host.yml down
-rm -f data/*/nodes.conf data/*/dump.rdb
-rm -rf data/*/appendonlydir
-docker compose -f docker-compose-host.yml up -d
+docker compose -f docker-compose.yml up -d
 ```
 
 The `init-cluster` service will automatically recreate the cluster topology.
@@ -388,23 +315,6 @@ docker exec redis-7001 redis-cli -p 7001 cluster nodes
 
 # Reset a failing node
 docker exec redis-7001 redis-cli -p 7001 CLUSTER RESET HARD
-```
-
-**5. macOS: Go client can't connect**
-
-- Make sure you're using `docker-compose-macos.yml`
-- Verify ports are exposed: `docker ps`
-- Try connecting to `localhost:7001` not `127.0.0.1:7001`
-- Check Go client uses `ClusterClient`, not single-node client
-
-**6. Linux: Permission denied**
-
-```bash
-# Add user to docker group
-sudo usermod -aG docker $USER
-
-# Re-login or use
-newgrp docker
 ```
 
 ---
