@@ -12,7 +12,6 @@ tasks:
   setup:
     desc: "Complete Ubuntu Redis Cluster setup (all steps)"
     cmds:
-      - task: stop-cluster
       - task: start-cluster
       - task: wait-cluster
       - task: status
